@@ -1,41 +1,44 @@
-# Nome do arquivo: bot.py
 import os
 from chatterbot import ChatBot
 
-# Configuração do Bot com adaptadores híbridos
+# Caminho para o mesmo banco de dados SQLite
+DB_FILE = os.path.join(os.path.dirname(__file__), "database.sqlite3")
+
+print("🤖 Inicializando o FitLife Assistant (Modo de Teste Local)...")
+
 chatbot = ChatBot(
     "FitLifeBot",
+    storage_adapter="chatterbot.storage.SQLStorageAdapter",
+    database_uri=f"sqlite:///{DB_FILE}",
     logic_adapters=[
         {
-            # Busca respostas exatas (ex: macros cadastrados)
+            # Busca correspondências na base de dados
             "import_path": "chatterbot.logic.BestMatch",
-            "default_response": "Não tenho certeza sobre isso. Vou perguntar para a minha IA integrada...",
-            "maximum_similarity_threshold": 0.70
-        },
-        {
-            # Acionado para substituições de alimentos e dicas criativas
-            "import_path": "chatterbot.logic.OllamaLogicAdapter",
-            "model": "llama3.2:latest",
-            "host": "http://localhost:11434",
-        },
-    ],
-    storage_adapter="chatterbot.storage.SQLStorageAdapter",
-    database_uri="sqlite:///database.sqlite3"
+            # Resposta caso o usuário pergunte algo que não está no JSON
+            "default_response": "Desculpe, ainda não tenho as informações desse alimento ou comando no meu banco de dados.",
+            # Se a pergunta for 60% parecida com o que está no banco, ele aceita
+            "maximum_similarity_threshold": 0.60
+        }
+    ]
 )
 
 exit_conditions = (":q", "quit", "exit", "sair")
 
-print("🍎 [FitLife Assistant] - Ativo e pronto! (Digite 'sair' para encerrar)")
+print("\nFitLife Assistant Ativo!")
+print("Pergunte-me sobre os alimentos salvos no seu JSON. (Digite 'sair' para encerrar)")
 
 while True:
     try:
-        query = input("\n👤 Você > ")
-        if query.lower() in exit_conditions:
-            print("💪 Treine pesado, coma bem e até logo!")
+        user_input = input("\n👤 Você > ")
+
+        if user_input.lower() in exit_conditions:
+            print("💪 Treine pesado, coma bem e até a próxima!")
             break
 
-        response = chatbot.get_response(query)
+        #O bot busca a resposta no seu banco
+        response = chatbot.get_response(user_input)
         print(f"🤖 Bot > {response}")
 
     except (KeyboardInterrupt, EOFError):
+        print("\n💪 Encerrando o assistente. Até logo!")
         break
