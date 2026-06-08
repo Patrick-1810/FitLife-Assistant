@@ -1,14 +1,30 @@
 import re
 
 def limpar_texto_usuario(texto_bruto):
-    """
-    [COLEGA 2] Crie suas funções de limpeza de texto aqui (remover emojis, links, etc).
-    """
-    if not texto_bruto: return ""
-    texto_limpo = texto_bruto.lower().strip()
-    texto_limpo = re.sub(r'http\S+', '', texto_limpo) # Exemplo: remove links
-    return texto_limpo
+    if not texto_bruto:
+        return ""
 
-if __name__ == "__main__":
-    teste = "Olha esse site http://google.com com macros!!!"
-    print("Texto limpo:", limpar_texto_usuario(teste))
+    # Converte para minúsculas e remove espaços inúteis nas pontas
+    texto_limpo = texto_bruto.lower().strip()
+
+    # Remove Links/URLs
+    texto_limpo = re.sub(r'https?://\S+|www\.\S+', '', texto_limpo)
+
+    # Remove Timestamps/Datas
+    texto_limpo = re.sub(r'\[?\d{2}/\d{2}/\d{4}\s\d{2}:\d{2}(:\d{2})?\]?', '', texto_limpo)
+    texto_limpo = re.sub(r'\b\d{2}:\d{2}\b\s*(-)?', '', texto_limpo)
+
+    # Remove Nomes de usuários/Tags comuns de chat
+    texto_limpo = re.sub(r'(^|\s)[\w\d_]+:', '', texto_limpo)
+    texto_limpo = re.sub(r'@\w+', '', texto_limpo)
+
+    # Mantém apenas letras, números, espaços e pontuações básicas
+    # Remove emojis e outros caracteres especiais sem engolir os espaços
+    texto_limpo = re.sub(r'[^a-zA-Z0-9áéíóúâêôçãõàíÁÉÍÓÚÂÊÔÇÃÕÀÍ\s!?,.]', '', texto_limpo)
+
+    # Limpa espaços múltiplos que sobraram e pontuações isoladas no início
+    texto_limpo = re.sub(r'\s+', ' ', texto_limpo).strip()
+    texto_limpo = re.sub(r'^[,.\s!]+', '',
+                         texto_limpo)
+
+    return texto_limpo
