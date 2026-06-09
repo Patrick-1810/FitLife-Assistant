@@ -1,3 +1,10 @@
+# ====================================================================
+# DEPENDÊNCIAS DO SISTEMA (INSTALAR ANTES DO PIP)
+# 1. Instale o Ollama via: https://ollama.com
+# 2. No terminal do Windows, rode: ollama pull llama3.2
+# ====================================================================
+
 chatterbot[dev]==1.2.13
 spacy==3.8.13
 click
+requests
