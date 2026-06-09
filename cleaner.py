@@ -17,7 +17,7 @@ def limpar_texto_usuario(texto_bruto):
     texto_limpo = re.sub(r'\b\d{2}:\d{2}\b\s*(-)?', '', texto_limpo)
 
     # Remove Nomes de usuários/Tags comuns de chat
-    texto_limpo = re.sub(r'(^|\s)[\w\d_]+:', '', texto_limpo)
+    texto_limpo = re.sub(r'^[\w\d_]+\s*:\s*', '', texto_limpo)
     texto_limpo = re.sub(r'@\w+', '', texto_limpo)
 
     # Mantém apenas letras, números, espaços e pontuações básicas
@@ -26,14 +26,38 @@ def limpar_texto_usuario(texto_bruto):
 
     # Limpa espaços múltiplos que sobraram e pontuações isoladas no início
     texto_limpo = re.sub(r'\s+', ' ', texto_limpo).strip()
-    texto_limpo = re.sub(r'^[,.\s!]+', '',
-                         texto_limpo)
+    texto_limpo = re.sub(r'^[,.\s!]+', '', texto_limpo)
 
     return texto_limpo
 
-def salvar_no_json(novos_dialogos, caminho_json="alimentos.json"):
+def estruturar_dialogos(dialogos_brutos):
+    pares_estrurados = []
+    pergunta_atual = None
+
+    for linha in dialogos_brutos:
+        linha_lowercase = linha.lower()
+        e_nutri = "nutri" in linha_lowercase or "nutri :" in linha_lowercase
+
+        linha_limpa = limpar_texto_usuario(linha)
+
+        if not linha_limpa:
+            continue
+
+        if not e_nutri:
+            pergunta_atual = linha_limpa
+        else:
+            if pergunta_atual:
+                pares_estrurados.append({
+                    "pergunta": pergunta_atual,
+                    "resposta": linha_limpa,
+                })
+                pergunta_atual = None
+    return pares_estrurados
+
+def salvar_no_json(novos_pares, caminho_json="data/alimentos.json"):
     dados_existentes = []
 
+    os.makedirs(os.path.dirname(caminho_json), exist_ok=True)
     if os.path.exists(caminho_json) and os.path.getsize(caminho_json) > 0:
         try:
             with open(caminho_json, 'r', encoding='utf-8') as f:
@@ -43,33 +67,29 @@ def salvar_no_json(novos_dialogos, caminho_json="alimentos.json"):
         except json.JSONDecodeError:
             dados_existentes = []
 
-    dialogos_validos = [d for d in novos_dialogos if d]
-
-    for dialogo in dialogos_validos:
-        dados_existentes.append(dialogo)
+    for par in novos_pares:
+        dados_existentes.append(par)
 
     with open(caminho_json, 'w', encoding='utf-8') as f:
         json.dump(dados_existentes, f, ensure_ascii=False, indent=4)
 
-    print(f"Sucesso! {len(dialogos_validos)} novos diálogos limpos foram adicionados ao {caminho_json}.\n")
+    print(f"Sucesso! {len(novos_pares)} novos diálogos limpos foram adicionados ao {caminho_json}.\n")
 
 
 if __name__ == "__main__":
-    dialogos_brutos = [
-        "Nutri: Olha esse site http://google.com com macros top!!! 👍",
+    historicoDoChat = [
         "[08/06/2026 13:30] Maromba2000: @Nutri, o que posso usar para substituir o arroz?",
-        "User123: 14:32 - bati minha meta de água de hj, 3L! 💧💧"
+        "Nutri: Olha esse site http://google.com podes usar quinoa ou arroz de couve-flor que têm ótimos macros! 👍",
+        "User123: Como faço para bater a minha meta diária de água?",
+        "Nutri: Tenta andar sempre com uma garrafa de 1L contigo e bebe um copo logo ao acordar! 💧"
     ]
 
     print("******* Iniciando a limpeza *******")
-    dialogos_limpos = []
 
-    # O loop faz apenas a limpeza e o print visual do terminal
-    for texto in dialogos_brutos:
-        limpo = limpar_texto_usuario(texto)
-        print(f"Bruto: {texto}")
-        print(f"Limpo: {limpo}\n")
-        dialogos_limpos.append(limpo)
+    novos_pares = estruturar_dialogos(historicoDoChat)
 
-    # Salva todos de uma vez após o término do loop
-    salvar_no_json(dialogos_limpos)
+    for par in novos_pares:
+        print(f"P: {par['pergunta']}")
+        print(f"R: {par['resposta']}\n")
+
+    salvar_no_json(novos_pares)
