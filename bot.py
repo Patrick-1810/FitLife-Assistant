@@ -17,7 +17,7 @@ chatbot = ChatBot(
             # Resposta caso o usuário pergunte algo que não está no JSON
             "default_response": "Desculpe, ainda não tenho as informações desse alimento ou comando no meu banco de dados.",
             # Se a pergunta for 60% parecida com o que está no banco, ele aceita
-            "maximum_similarity_threshold": 0.60
+            "maximum_similarity_threshold": 0.75
         }
     ]
 )

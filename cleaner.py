@@ -21,7 +21,6 @@ def limpar_texto_usuario(texto_bruto):
     texto_limpo = re.sub(r'@\w+', '', texto_limpo)
 
     # Mantém apenas letras, números, espaços e pontuações básicas
-    # Remove emojis e outros caracteres especiais sem engolir os espaços
     texto_limpo = re.sub(r'[^a-zA-Z0-9áéíóúâêôçãõàíÁÉÍÓÚÂÊÔÇÃÕÀÍ\s!?,.]', '', texto_limpo)
 
     # Limpa espaços múltiplos que sobraram e pontuações isoladas no início
@@ -31,7 +30,7 @@ def limpar_texto_usuario(texto_bruto):
     return texto_limpo
 
 def estruturar_dialogos(dialogos_brutos):
-    pares_estrurados = []
+    pares_estruturados = []
     pergunta_atual = None
 
     for linha in dialogos_brutos:
@@ -47,12 +46,10 @@ def estruturar_dialogos(dialogos_brutos):
             pergunta_atual = linha_limpa
         else:
             if pergunta_atual:
-                pares_estrurados.append({
-                    "pergunta": pergunta_atual,
-                    "resposta": linha_limpa,
-                })
+                # ALTERADO AQUI: Modificado de dicionário {} para uma lista [] com os dois valores
+                pares_estruturados.append([pergunta_atual, linha_limpa])
                 pergunta_atual = None
-    return pares_estrurados
+    return pares_estruturados
 
 def salvar_no_json(novos_pares, caminho_json="data/alimentos.json"):
     dados_existentes = []
@@ -88,8 +85,9 @@ if __name__ == "__main__":
 
     novos_pares = estruturar_dialogos(historicoDoChat)
 
+    # Ajustado o print para ler a lista interna por índice
     for par in novos_pares:
-        print(f"P: {par['pergunta']}")
-        print(f"R: {par['resposta']}\n")
+        print(f"P: {par[0]}")
+        print(f"R: {par[1]}\n")
 
     salvar_no_json(novos_pares)
