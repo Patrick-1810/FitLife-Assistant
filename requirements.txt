@@ -1,0 +1,26 @@
+# ====================================================================
+# DEPENDÊNCIAS DO SISTEMA (INSTALAR ANTES DO PIP)
+# 1. Instale o Ollama: https://ollama.com/download
+# 2. No terminal, baixe os modelos:
+#    ollama pull llama3.2
+#    ollama pull llama3.2-vision
+# ====================================================================
+
+# API
+fastapi==0.137.1
+uvicorn==0.49.0
+python-multipart==0.0.32
+
+# Ollama Python client
+ollama==0.6.2
+
+# Imagem
+pillow==12.2.0
+
+# HTTP
+requests==2.32.4
+
+# Chat local (legado CLI)
+chatterbot[dev]==1.2.13
+spacy==3.8.13
+click
