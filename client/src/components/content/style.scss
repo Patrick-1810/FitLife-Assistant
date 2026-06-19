@@ -1,0 +1,343 @@
+@import "../../index.scss";
+
+@keyframes txtBlink {
+  0% {
+    border-right: 4px solid;
+  }
+  50% {
+    border-right: none;
+  }
+  100% {
+    border-right: 4px solid;
+  }
+}
+
+// --- CONFIGURAÇÃO DE CORES (TEMA PADRÃO NUTRUTIO) ---
+.New {
+  background-color: #faf4e9; // Fundo bege claro do Nutrutio
+
+  .suggestion-card {
+    background: transparent;
+    border: 1px solid #e6d5c3;
+    color: #4a3e3d;
+
+    &:hover {
+      background-color: rgba(212, 92, 54, 0.04);
+      border-color: #d65a31;
+    }
+  }
+}
+
+.Chat {
+  background-color: #faf4e9; // Mantém o fundo bege consistente em toda a conversa
+  min-height: 100vh;
+
+  .qs {
+    background: transparent; // Fica limpo sobre o fundo bege
+    .txt {
+      color: #4a3e3d;
+      font-weight: 500;
+    }
+  }
+  .res {
+    background: rgba(
+      255,
+      255,
+      255,
+      0.4
+    ); // Leve destaque para a resposta do bot
+    border-top: 1px solid #e6d5c3;
+    border-bottom: 1px solid #e6d5c3;
+
+    .txt {
+      .error {
+        color: #ef4444;
+      }
+      span {
+        color: #4a3e3d;
+        &::after {
+          border-color: #4a3e3d;
+        }
+      }
+    }
+  }
+}
+
+// --- ESTRUTURA DA TELA INICIAL (.New) ---
+.New {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 100px);
+  padding: 4rem 1.5rem 14rem 1.5rem; // Padding inferior aumentado para não cobrir os cards
+  box-sizing: border-box;
+
+  .welcome-container {
+    text-align: center;
+    max-width: 580px;
+    margin-bottom: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      margin-bottom: 1.5rem;
+    }
+
+    .title {
+      font-size: 2.25rem;
+      font-weight: 600;
+      color: #333333;
+      margin: 0 0 0.75rem 0;
+
+      span {
+        color: #d65a31;
+      }
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #7a685c;
+      line-height: 1.5;
+      margin: 0;
+    }
+  }
+
+  .suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(260px, 380px));
+    gap: 14px;
+    width: 100%;
+    max-width: 780px;
+    justify-content: center;
+
+    @media screen and (max-width: 767px) {
+      grid-template-columns: 1fr;
+    }
+
+    .suggestion-card {
+      font-family: inherit;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      text-align: left;
+      padding: 1.1rem 1.4rem;
+      border-radius: 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      outline: none;
+    }
+  }
+}
+
+// --- CONTROLLER DO CHAT DE MENSAGENS ---
+.Chat {
+  display: block;
+  text-align: left;
+  padding-bottom: 14rem; // Espaço garantido para a barra inferior fixa
+
+  .qs,
+  .res {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    padding-left: 10em;
+    padding-right: 12em;
+    display: grid;
+    grid-template-columns: calc(30px + 1.5rem) auto;
+
+    @media only screen and (max-width: 1300px) {
+      padding-left: 5em;
+      padding-right: 5em;
+    }
+    @media only screen and (max-width: 1000px) {
+      padding-left: 1em;
+      padding-right: 1em;
+    }
+    @media only screen and (max-width: 767px) {
+      grid-template-columns: calc(30px + 1rem) auto;
+    }
+  }
+
+  .qs {
+    @media only screen and (max-width: 767px) {
+      padding-top: 4rem;
+    }
+    .acc {
+      display: flex;
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: #7a685c; // Tom marrom sutil para o user avatar
+      color: white;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%; // Avatar redondo
+      font-weight: 500;
+      margin-right: 1.5rem;
+      @media only screen and (max-width: 767px) {
+        margin-right: 1rem;
+      }
+    }
+    .txt {
+      line-height: 1.5rem;
+      font-size: 1rem;
+    }
+  }
+
+  .res {
+    .icon {
+      position: relative;
+      display: flex;
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: #d65a31; // Laranja do Nutrutio no ícone do bot
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%; // Redondo condizente com a marca
+      margin-right: 1.5rem;
+      @media only screen and (max-width: 767px) {
+        margin-right: 1rem;
+      }
+
+      svg {
+        width: 1.1rem;
+        height: 1.1rem;
+        color: white;
+      }
+      span {
+        position: absolute;
+        background: rgba(239, 68, 68, 1);
+        border-radius: 50%;
+        font-size: 10px;
+        width: 1rem;
+        height: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        right: -4px;
+        bottom: -4px;
+        color: white;
+        border: 1px solid white;
+      }
+    }
+
+    .txt {
+      display: block;
+      .error {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 1);
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+      }
+      span {
+        line-height: 1.5rem;
+        font-size: 1rem;
+        white-space: pre-wrap;
+        &:is(.blink)::after {
+          content: "";
+          padding-left: 3px;
+          border-right: 4px solid;
+          animation: txtBlink 1s ease-in-out infinite;
+        }
+      }
+    }
+  }
+
+  // --- NOVA ESTILIZAÇÃO: LINHA SEPARADORA E CAMPO DE INPUT (RODAPÉ) ---
+  .chat-input-wrapper {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: calc(
+      100% - 260px
+    ); // Ajuste caso seu menu lateral tenha tamanho fixo diferente
+    background-color: #faf4e9;
+    border-top: 1px solid #e6d5c3; // Linha fina separadora igual ao print
+    padding: 1.5rem 1rem 1rem 1rem;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+
+    @media screen and (max-width: 767px) {
+      width: 100%;
+    }
+
+    .chat-input-container {
+      width: 100%;
+      max-width: 780px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+
+      .input-box {
+        width: 100%;
+        background: #ffffff;
+        border: 1px solid #e6d5c3;
+        border-radius: 1.25rem;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        position: relative;
+        box-sizing: border-box;
+
+        textarea {
+          width: 100%;
+          background: transparent;
+          border: none;
+          outline: none;
+          font-size: 1rem;
+          color: #4a3e3d;
+          resize: none;
+          font-family: inherit;
+          padding-right: 45px;
+
+          &::placeholder {
+            color: #bfaea0;
+          }
+        }
+
+        .send-button {
+          position: absolute;
+          right: 12px;
+          bottom: 10px;
+          width: 36px;
+          height: 36px;
+          background-color: #d65a31;
+          color: #ffffff;
+          border: none;
+          border-radius: 0.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background 0.2s ease;
+
+          svg {
+            width: 16px;
+            height: 16px;
+          }
+
+          &:hover {
+            background-color: #be4b27;
+          }
+        }
+      }
+
+      .input-disclaimer {
+        font-size: 0.825rem;
+        color: #7a685c;
+        margin: 0;
+        text-align: center;
+      }
+    }
+  }
+}

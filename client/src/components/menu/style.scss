@@ -1,0 +1,276 @@
+header {
+  display: none;
+}
+
+.exitMenu {
+  display: none;
+}
+
+@media screen and (max-width: 767px) {
+  .exitMenu {
+    display: none;
+    position: fixed;
+    width: calc(100vw - 260px);
+    height: 100%;
+    background: rgba(86, 88, 105, 0.75);
+    top: 0;
+    z-index: 2000;
+    left: 260px;
+
+    button {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      margin-top: 10px;
+      margin-left: 10px;
+      cursor: pointer;
+      outline: none;
+
+      &:focus {
+        border: 2px solid white;
+      }
+
+      svg {
+        color: white;
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  header {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #fbf0e4; // Ajustado para combinar com o tema claro
+    padding-top: 0.5em;
+    padding-bottom: 0.3em;
+    color: #4a3e3d;
+    z-index: 1000;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+
+    button {
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      color: #4a3e3d;
+      cursor: pointer;
+    }
+
+    .start {
+      text-align: left;
+      padding-left: 0.5em;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .title {
+      margin-left: 1rem;
+      margin-right: 0.8rem;
+      padding-top: 3px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-weight: bold;
+    }
+
+    .end {
+      text-align: right;
+      padding-right: 0.5em;
+    }
+  }
+}
+
+// --- CONFIGURAÇÃO DO MENU LATERAL (ESTILO NUTRUTIO) ---
+.menu {
+  position: fixed;
+  z-index: 2000;
+  width: 305px;
+  background: rgb(251, 240, 228);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1.2rem 0;
+  box-sizing: border-box;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-right: 1px solid #e6d5c3;
+
+  // Bloco Superior (Logo + Título)
+  .name-nutrutio {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+
+    img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .text-wrapper {
+      display: flex;
+      flex-direction: column;
+
+      .title-nut {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #4a3e3d;
+        line-height: 1.2;
+      }
+
+      .text-nut {
+        font-size: 0.85rem;
+        color: #8a7a6b;
+      }
+    }
+  }
+
+  // Container do botão Nova Conversa
+  .new-chat-container {
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  // Botão Laranja "Nova Conversa"
+  .button-menu {
+    background: rgb(212, 92, 54);
+    color: #ffffff;
+    width: 100%;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: bold;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0px 4px 10px rgba(212, 92, 54, 0.2);
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgb(190, 75, 39);
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.5;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    display: none;
+
+    &:is(.showMd),
+    &:is(.showMd) + .exitMenu {
+      display: flex;
+    }
+  }
+
+  // Seção do Histórico
+  .history-section {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; // Ocupa todo o espaço vertical do meio
+    padding: 0 1rem;
+    overflow: hidden;
+
+    .history-title {
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #8a7a6b;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+
+    .history-list {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-right: 4px;
+
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: rgba(138, 122, 107, 0.3);
+        border-radius: 10px;
+      }
+
+      // Itens da Lista de Histórico
+      .history-item {
+        background: transparent;
+        border: none;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-size: 0.95rem;
+        color: #4a3e3d;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        transition: background 0.2s;
+
+        &:hover {
+          background: rgba(212, 92, 54, 0.08);
+        }
+
+        // Conversa Ativa selecionada
+        &.active {
+          background: #f4e3cf; // Fundo escurecido suave do item ativo
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  // Caixa de Dica Fixada no Rodapé
+  .menu-footer {
+    padding: 0 1rem;
+    margin-top: auto;
+
+    .dica-box {
+      background: #f4e3cf;
+      border: 1px solid #ebd2b7;
+      border-radius: 1rem;
+      padding: 0.85rem 1rem;
+
+      .dica-header {
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: #724226;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+      }
+
+      .dica-text {
+        font-size: 0.8rem;
+        color: #63544b;
+        line-height: 1.35;
+        margin: 0;
+      }
+    }
+  }
+}

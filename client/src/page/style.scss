@@ -1,0 +1,268 @@
+@import "../index.scss";
+
+@keyframes sendingDot2 {
+  0% {
+    background: transparent;
+  }
+  50% {
+    background: #d65a31;
+  }
+  100% {
+    background: #d65a31;
+  }
+}
+
+@keyframes sendingDot3 {
+  0% {
+    background: transparent;
+  }
+  50% {
+    background: transparent;
+  }
+  100% {
+    background: #d65a31;
+  }
+}
+
+// --- GLOBAL DO COMPONENTE MAIN ---
+.main {
+  width: 100%;
+  display: block;
+  position: relative;
+  background-color: #faf4e9; // Garante o fundo bege padrão do Nutrutio
+
+  .contentArea {
+    height: auto;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+// --- REESTRUTURAÇÃO COMPLETA DA ÁREA DO INPUT (RODAPÉ) ---
+.chat-input-wrapper {
+  position: fixed;
+  z-index: 1000;
+  bottom: 0;
+  right: 0;
+  width: calc(100vw - 260px) !important; // Desconta a Sidebar padrão
+  background-color: #faf4e9; // Fundo bege igual ao resto da página
+  border-top: 1px solid #e6d5c3; // A linha fina separadora horizontal que você pediu
+  padding: 1rem 0 1.5rem 0;
+  box-sizing: border-box;
+
+  @media screen and (max-width: 767px) {
+    width: 100% !important;
+  }
+
+  .chat-input-container {
+    width: 100%;
+    max-width: 780px; // Mantém o alinhamento centralizado com o grid de cards
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  // Alinhamento horizontal do input e botões mobile
+  .flexBody {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    background: transparent;
+    box-sizing: border-box;
+
+    @media only screen and (max-width: 1000px) {
+      padding: 0 1rem;
+    }
+  }
+
+  // A caixa branca arredondada do input
+  .input-box {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #e6d5c3;
+    border-radius: 1.25rem; // Bordas bem arredondadas conforme o mockup
+    padding: 0.85rem 1.25rem;
+    box-sizing: border-box;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+
+    textarea {
+      width: 100%;
+      height: 24px;
+      outline: none;
+      border: none;
+      background: transparent;
+      resize: none;
+      font-family: inherit;
+      font-size: 1rem;
+      color: #4a3e3d;
+      padding-right: 45px; // Evita que o texto passe por baixo do botão
+      overflow-y: auto;
+      max-height: 12em;
+
+      &::placeholder {
+        color: #bfaea0;
+      }
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: #e6d5c3;
+        border-radius: 10px;
+      }
+    }
+
+    // Botão de envio laranja com a seta
+    .send-button {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      width: 36px;
+      height: 36px;
+      background-color: #d65a31; // Laranja Nutrutio
+      border: none;
+      outline: none;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s ease;
+
+      svg {
+        width: 16px;
+        height: 16px;
+        color: #ffffff !important;
+      }
+
+      &:hover {
+        background-color: #be4b27;
+      }
+    }
+
+    // Animação de três pontinhos piscando ao carregar
+    .loading {
+      display: flex;
+      gap: 3px;
+      position: absolute;
+      bottom: 14px;
+      right: 16px;
+
+      .dot {
+        width: 4px;
+        height: 4px;
+        background: #d65a31;
+        border-radius: 50%;
+      }
+      .dot-2 {
+        animation: sendingDot2 1s ease-in-out infinite;
+      }
+      .dot-3 {
+        animation: sendingDot3 1s ease-in-out infinite;
+      }
+    }
+  }
+
+  // Texto explicativo sutil abaixo do input
+  .input-disclaimer {
+    font-size: 0.8rem;
+    color: #7a685c;
+    margin: 4px 0 0 0;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+// --- BOTÕES DE REGENERAR / PARAR (ACIMA DO INPUT) ---
+.chatActionsLg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+
+  button {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    background: #ffffff;
+    color: #4a3e3d;
+    border: 1px solid #e6d5c3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s;
+
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
+      color: #d65a31;
+    }
+
+    &:hover {
+      background: #fcfaf7;
+      border-color: #d65a31;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
+}
+
+.chatActionsMd {
+  display: none;
+
+  @media only screen and (max-width: 767px) {
+    display: block;
+
+    button {
+      height: 100%;
+      padding: 0 0.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #d65a31;
+    }
+  }
+}
+
+// --- ENVELOPE DE ERROS DE CONEXÃO ---
+.error-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  width: 100%;
+
+  p {
+    font-size: 0.875rem;
+    color: #ef4444;
+    margin-bottom: 0.5rem;
+  }
+
+  button {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    background: #d65a31;
+    color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      color: #ffffff;
+    }
+  }
+}
