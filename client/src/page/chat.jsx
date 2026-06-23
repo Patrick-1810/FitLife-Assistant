@@ -125,22 +125,31 @@ const InputArea = ({ status, chatRef, stateAction, currentChatId }) => {
       let chatsIdProvisorio = currentChatId ? Number(currentChatId) : Date.now();
       
       const mensagemUsuario = prompt || "Analisando imagem enviada...";
+      
+      // Armazena o link do preview local para limpar o estado de input sem sumir da tela de chat
+      const localImageBlob = imagePreview; 
 
+      // 1. Injeta localmente os dados imediatamente (Texto + Imagem Blob)
       dispatch(
         insertNew({
           chatsId: chatsIdProvisorio,
           content: "",
           prompt: mensagemUsuario,
+          image: localImageBlob, // Enviando o link temporário para o Redux Chat renderizar!
         }),
       );
 
       chatRef?.current?.clearResponse();
+      
+      // Limpa imediatamente o container de upload do input para dar o feedback visual de envio
+      clearSelectedImage(); 
 
       try {
         let responseContent = "";
         let backendChatId = currentChatId;
 
         if (selectedImage) {
+          // Passa o arquivo "selectedImage" original que guardamos no escopo da função
           const ocrResult = await fitLifeService.enviarImagemOCR(selectedImage, true);
           responseContent = ocrResult.text;
           
@@ -152,7 +161,6 @@ const InputArea = ({ status, chatRef, stateAction, currentChatId }) => {
             responseContent = `[Resultado da Análise da Imagem]:\n${responseContent}\n\n[Sobre a sua pergunta]:\n` + chatResult.response;
             backendChatId = chatResult.chat_id;
           }
-          clearSelectedImage();
         } 
         else {
           const chatResult = await fitLifeService.enviarMensagemChat(mensagemUsuario, backendEnvioId);
@@ -160,15 +168,16 @@ const InputArea = ({ status, chatRef, stateAction, currentChatId }) => {
           backendChatId = chatResult.chat_id; 
         }
 
+        // 2. Sincroniza a resposta mantendo a imagem vinculada
         dispatch(
           insertNew({
             _id: Number(backendChatId),
             fullContent: responseContent,
             chatsId: chatsIdProvisorio,
+            image: localImageBlob
           }),
         );
 
-       
         chatRef?.current?.loadResponse(stateAction, responseContent, chatsIdProvisorio);
 
         const historicoAtualizado = await fitLifeService.buscarHistorico();
@@ -181,7 +190,7 @@ const InputArea = ({ status, chatRef, stateAction, currentChatId }) => {
       }
     }
   };
-
+  
   return (
     <div className="chat-input-wrapper">
       {!status.error ? (

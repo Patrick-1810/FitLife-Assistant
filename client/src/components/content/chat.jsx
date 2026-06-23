@@ -5,9 +5,9 @@ import React, {
   useRef,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { GptIcon } from "../../assets";
 import { insertNew } from "../../redux/messages";
 import "./style.scss";
+import logo from "../../assets/logo.png"; 
 
 const Chat = forwardRef(({ error }, ref) => {
   const dispatch = useDispatch();
@@ -83,13 +83,21 @@ const Chat = forwardRef(({ error }, ref) => {
             <Fragment key={key}>
               <div className="qs">
                 <div className="acc">U</div>
-                <div className="txt">{obj?.prompt}</div>
+                <div className="txt">
+                  {/* CORREÇÃO: Renderiza imagem se existir no histórico local */}
+                  {obj?.image && (
+                    <div className="chat-img-preview">
+                      <img src={obj.image} alt="Upload do usuário" style={{ maxWidth: '200px', borderRadius: '8px', marginBottom: '8px' }} />
+                    </div>
+                  )}
+                  {obj?.prompt}
+                </div>
               </div>
 
               <div className="res">
-                <div className="icon">
-                  <GptIcon />
-                </div>
+                <div className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src={logo} alt="Nutrutio" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              </div>
                 <div className="txt">
                   <span>{obj?.content}</span>
                 </div>
@@ -98,17 +106,25 @@ const Chat = forwardRef(({ error }, ref) => {
           );
         })}
 
-      {/* Mensagem Ativa Sendo Gerada */}
+      {/* Mensagem Ativa Sendo Gerada / Aguardando OCR */}
       {latest?.prompt?.length > 0 && (
         <Fragment>
           <div className="qs">
             <div className="acc">U</div>
-            <div className="txt">{latest?.prompt}</div>
+            <div className="txt">
+              {/* CORREÇÃO: Renderiza a imagem local instantaneamente enquanto carrega */}
+              {latest?.image && (
+                <div className="chat-img-preview">
+                  <img src={latest.image} alt="Enviando..." style={{ maxWidth: '200px', borderRadius: '8px', marginBottom: '8px', opacity: 0.8 }} />
+                </div>
+              )}
+              {latest?.prompt}
+            </div>
           </div>
 
           <div className="res">
-            <div className="icon">
-              <GptIcon />
+            <div className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src={logo} alt="Nutrutio" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               {error && <span>!</span>}
             </div>
             <div className="txt">
@@ -124,7 +140,6 @@ const Chat = forwardRef(({ error }, ref) => {
           </div>
         </Fragment>
       )}
-     
     </div>
   );
 });
