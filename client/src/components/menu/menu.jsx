@@ -1,21 +1,53 @@
-import React, { Fragment, useRef, useState } from "react";
-import { Bar, Plus, Message, Xicon } from "../../assets/";
+import React, { Fragment, useRef } from "react";
+import { Bar, Plus, Xicon } from "../../assets/";
+import { useDispatch, useSelector } from "react-redux";
+import { addList, emptyAllRes } from "../../redux/messages"; 
+import { activePage } from "../../redux/history"; // Importado para marcar o item como ativo visualmente
+import { fitLifeService } from "../../services/api";
 
 import logo from "../../assets/logo.png";
 import "./style.scss";
 
 const Menu = ({ changeColorMode }) => {
-  let path = window.location.pathname;
-
   const menuRef = useRef(null);
   const btnRef = useRef(null);
+  const dispatch = useDispatch();
 
-  // Exemplo de histórico simulando o comportamento da imagem (duas conversas)
-  const history = [{ chatId: "1", prompt: "Nova conversa", active: true }];
+  const history = useSelector((state) => state.history) || [];
+  const activeChatId = useSelector((state) => state.messages._id);
 
   const showMenuMd = () => {
     menuRef.current.classList.add("showMd");
     document.body.style.overflowY = "hidden";
+  };
+
+  const closeMenuMd = () => {
+    menuRef.current.classList.remove("showMd");
+    document.body.style.overflowY = "auto";
+  };
+
+  //  FUNÇÃO PARA CARREGAR UM CHAT ANTIGO
+  const handleSelectChat = async (chatId) => {
+    try {
+      const numChatId = Number(chatId);
+      const dadosChat = await fitLifeService.carregarMensagensChat(numChatId);
+      
+      // Envia as mensagens recuperadas para o Redux messages
+      dispatch(addList(dadosChat));
+
+      // Ativa a ordenação e marcação visual no historySlice
+      dispatch(activePage(numChatId));
+      
+      // Fecha o menu caso esteja no mobile
+      closeMenuMd();
+    } catch (err) {
+      console.error("Erro ao carregar chat selecionado:", err);
+    }
+  };
+
+  const handleNewChat = () => {
+    dispatch(emptyAllRes()); 
+    closeMenuMd();
   };
 
   return (
@@ -30,15 +62,7 @@ const Menu = ({ changeColorMode }) => {
         <div className="title">New Chat</div>
 
         <div className="end">
-          <button
-            onClick={() => {
-              if (path.includes("/chat")) {
-                window.location.href = "/";
-              } else {
-                window.location.href = "/chat";
-              }
-            }}
-          >
+          <button onClick={handleNewChat}>
             <Plus />
           </button>
         </div>
@@ -60,33 +84,24 @@ const Menu = ({ changeColorMode }) => {
             className="button-menu"
             type="button"
             aria-label="new"
-            onClick={() => {
-              if (path.includes("/chat")) {
-                window.location.href = "/";
-              } else {
-                window.location.href = "/chat";
-              }
-            }}
+            onClick={handleNewChat}
           >
             <Plus />
             Nova conversa
           </button>
         </div>
 
-        {/* Histórico de Conversas */}
+        {/* Histórico de Conversas Dinâmico */}
         <div className="history-section">
           <div className="history-title">HISTÓRICO</div>
           <div className="history-list">
-            {history?.map((obj, key) => (
+            {history.map((obj, key) => (
               <button
                 key={key}
-                className={`history-item ${obj?.active ? "active" : ""}`}
-                onClick={() => {
-                  // Insira sua lógica de navegação aqui se necessário
-                  window.location.href = `/chat/${obj?.chatId}`;
-                }}
+                className={`history-item ${Number(obj?.chatId) === Number(activeChatId) ? "active" : ""}`}
+                onClick={() => handleSelectChat(obj?.chatId)}
               >
-                {obj?.prompt}
+                {obj?.title || "Conversa antiga"}
               </button>
             ))}
           </div>
@@ -96,7 +111,6 @@ const Menu = ({ changeColorMode }) => {
         <div className="menu-footer">
           <div className="dica-box">
             <div className="dica-header">
-              {/* Se tiver um ícone de folha na folha de assets, adicione aqui */}
               <span>🍃 Dica</span>
             </div>
             <p className="dica-text">
@@ -107,7 +121,7 @@ const Menu = ({ changeColorMode }) => {
       </div>
 
       <div className="exitMenu">
-        <button>
+        <button onClick={closeMenuMd}>
           <Xicon />
         </button>
       </div>

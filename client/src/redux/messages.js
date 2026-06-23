@@ -7,6 +7,7 @@ let messagesSlice = createSlice({
         content: '',
         _id: null,
         latest: {
+            id: null,
             prompt: '',
             content: ''
         },
@@ -19,6 +20,7 @@ let messagesSlice = createSlice({
                 content: '',
                 _id: null,
                 latest: {
+                    id: null,
                     prompt: '',
                     content: ''
                 },
@@ -27,8 +29,13 @@ let messagesSlice = createSlice({
         },
         addList: (state, { payload }) => {
             const { _id, items } = payload
-            state._id = _id
-            state.all = items
+            state._id = Number(_id)
+      
+            state.all = items.map(item => ({
+                id: Number(item.id),
+                prompt: item.prompt,
+                content: item.content
+            }))
             return state
         },
         insertNew: (state, { payload }) => {
@@ -37,24 +44,32 @@ let messagesSlice = createSlice({
                 _id = null, prompt = null } = payload
 
             if (_id) {
-                state._id = _id
+                state._id = Number(_id)
             }
 
-            state.latest.id = chatsId
+            const targetId = chatsId ? Number(chatsId) : (_id ? Number(_id) : null);
+            state.latest.id = targetId
 
             if (prompt) {
                 state.latest.prompt = prompt
             }
 
             const addToList = (latest) => {
-                if (state['all'].find(obj => obj.id === latest.id)) {
+                const numId = Number(latest.id)
+                
+                const existing = state['all'].find(obj => Number(obj.id) === numId)
+                if (existing) {
                     state['all'].forEach(obj => {
-                        if (obj.id === latest.id) {
+                        if (Number(obj.id) === numId) {
                             obj.content = latest.content
                         }
                     })
                 } else {
-                    state['all'].push(latest)
+                    state['all'].push({
+                        id: numId,
+                        prompt: latest.prompt,
+                        content: latest.content
+                    })
                 }
             }
 

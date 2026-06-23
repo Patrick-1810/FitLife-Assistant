@@ -6,11 +6,14 @@ const api = axios.create({
 });
 
 export const fitLifeService = {
-  // Envia a mensagem do chat para o Llama 3.2
-  enviarMensagemChat: async (message) => {
+  // Envia a mensagem do chat para o backend passando o chatId opcional
+  enviarMensagemChat: async (message, chatId = null) => {
     try {
-      const response = await api.post("/chat", { message });
-      return response.data.response; // Retorna o texto puro vindo do Llama
+      const response = await api.post("/chat", { 
+        message, 
+        chat_id: chatId // Passa o ID para o backend salvar na mesma conversa
+      });
+      return response.data; // Retorna o objeto completo: { response: "...", source: "...", chat_id: 123 }
     } catch (error) {
       console.error("Erro na requisição de chat:", error);
       throw error;
@@ -31,6 +34,28 @@ export const fitLifeService = {
       return response.data; // Retorna { text: "...", mode: "..." }
     } catch (error) {
       console.error("Erro na requisição de OCR:", error);
+      throw error;
+    }
+  },
+
+  // BUSCA O HISTÓRICO COMPLETO (Para alimentar a barra lateral / historySlice)
+  buscarHistorico: async () => {
+    try {
+      const response = await api.get("/history");
+      return response.data; // Retorna a lista de chats: [{ chatId: 123, title: "...", active: false }]
+    } catch (error) {
+      console.error("Erro ao buscar histórico de conversas:", error);
+      throw error;
+    }
+  },
+
+  // CARREGA AS MENSAGENS DE UM CHAT ESPECÍFICO (Para alimentar o messagesSlice)
+  carregarMensagensChat: async (chatId) => {
+    try {
+      const response = await api.get(`/chat/${chatId}`);
+      return response.data; // Retorna no padrão Redux: { _id: 123, items: [...] }
+    } catch (error) {
+      console.error(`Erro ao carregar mensagens do chat ${chatId}:`, error);
       throw error;
     }
   }
