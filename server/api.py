@@ -100,7 +100,7 @@ class MessageItem(BaseModel):
     content: str
 
 class ChatMessagesResponse(BaseModel):
-    _id: int
+    chatId: int
     items: List[MessageItem]
 
 
@@ -145,7 +145,7 @@ def get_chat_messages(chat_id: int):
             } for row in rows
         ]
         
-        return ChatMessagesResponse(_id=chat_id, items=items)
+        return ChatMessagesResponse(chatId=chat_id, items=items)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao buscar mensagens do chat: {str(e)}")
 
@@ -169,11 +169,52 @@ async def ocr_image(
         raise HTTPException(status_code=400, detail="Imagem vazia.")
 
     try:
-        text = run_ocr(image_bytes, nutrition_mode=nutrition_mode)
+        food_description = run_ocr(image_bytes, nutrition_mode=nutrition_mode)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro no OCR: {str(e)}")
 
-    return OCRResponse(text=text, mode="nutrition" if nutrition_mode else "generic")
+    if nutrition_mode:
+        try:
+            nutrition_prompt = (
+                f"Você é um nutricionista especialista. Com base nos alimentos descritos a seguir, "
+                f"forneça uma análise nutricional completa em português, de forma direta e estruturada.\n\n"
+                f"Descrição dos alimentos na imagem: {food_description}\n\n"
+                f"Responda no seguinte formato:\n"
+                f"**Alimentos identificados:** ...\n"
+                f"**Estimativa de porção:** ...\n"
+                f"**Calorias:** ...\n"
+                f"**Proteínas:** ...\n"
+                f"**Carboidratos:** ...\n"
+                f"**Gorduras:** ...\n"
+                f"**Observações:** ..."
+            )
+            resp = requests.post(OLLAMA_URL, json={
+                "model": CHAT_MODEL,
+                "prompt": nutrition_prompt,
+                "stream": False,
+            }, timeout=45)
+            resp.raise_for_status()
+            final_text = resp.json().get("response", "").strip()
+        except Exception:
+            final_text = food_description
+    else:
+        final_text = food_description
+
+    return OCRResponse(text=final_text, mode="nutrition" if nutrition_mode else "generic")
+
+
+@app.delete("/chat/{chat_id}")
+def delete_chat(chat_id: int):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM custom_messages WHERE chat_id = ?", (chat_id,))
+        cursor.execute("DELETE FROM chats WHERE id = ?", (chat_id,))
+        conn.commit()
+        conn.close()
+        return {"success": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao deletar chat: {str(e)}")
 
 
 @app.post("/chat", response_model=ChatResponse)

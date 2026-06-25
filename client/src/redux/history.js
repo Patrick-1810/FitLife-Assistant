@@ -7,6 +7,9 @@ let historySlice = createSlice({
         addHistory: (state, { payload }) => {
             return payload
         },
+        removeChat: (state, { payload }) => {
+            return state.filter(obj => obj.chatId !== payload)
+        },
         activePage: (state, { payload = null }) => {
             let pos = null
             state.forEach((obj, index) => {
@@ -18,7 +21,7 @@ let historySlice = createSlice({
                 }
             })
 
-            if (pos) {
+            if (pos !== null) {
                 let obj = state[pos]
                 state.splice(pos,1)
                 state.unshift(obj)
@@ -29,6 +32,6 @@ let historySlice = createSlice({
     }
 })
 
-export const { addHistory, activePage } = historySlice.actions
+export const { addHistory, activePage, removeChat } = historySlice.actions
 
 export default historySlice.reducer

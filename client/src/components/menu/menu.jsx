@@ -1,8 +1,8 @@
 import React, { Fragment, useRef } from "react";
-import { Bar, Plus, Xicon } from "../../assets/";
+import { Bar, Plus, Xicon, Trash } from "../../assets/";
 import { useDispatch, useSelector } from "react-redux";
-import { addList, emptyAllRes } from "../../redux/messages"; 
-import { activePage } from "../../redux/history"; // Importado para marcar o item como ativo visualmente
+import { addList, emptyAllRes } from "../../redux/messages";
+import { activePage, removeChat } from "../../redux/history";
 import { fitLifeService } from "../../services/api";
 
 import logo from "../../assets/logo.png";
@@ -46,8 +46,22 @@ const Menu = ({ changeColorMode }) => {
   };
 
   const handleNewChat = () => {
-    dispatch(emptyAllRes()); 
+    dispatch(emptyAllRes());
     closeMenuMd();
+  };
+
+  const handleDeleteChat = async (e, chatId) => {
+    e.stopPropagation();
+    if (!window.confirm("Tem certeza que deseja excluir esta conversa?")) return;
+    try {
+      await fitLifeService.excluirChat(chatId);
+      dispatch(removeChat(Number(chatId)));
+      if (Number(activeChatId) === Number(chatId)) {
+        dispatch(emptyAllRes());
+      }
+    } catch (err) {
+      console.error("Erro ao excluir chat:", err);
+    }
   };
 
   return (
@@ -59,7 +73,7 @@ const Menu = ({ changeColorMode }) => {
           </button>
         </div>
 
-        <div className="title">New Chat</div>
+        <div className="title">Nova conversa</div>
 
         <div className="end">
           <button onClick={handleNewChat}>
@@ -96,13 +110,20 @@ const Menu = ({ changeColorMode }) => {
           <div className="history-title">HISTÓRICO</div>
           <div className="history-list">
             {history.map((obj, key) => (
-              <button
+              <div
                 key={key}
                 className={`history-item ${Number(obj?.chatId) === Number(activeChatId) ? "active" : ""}`}
                 onClick={() => handleSelectChat(obj?.chatId)}
               >
-                {obj?.title || "Conversa antiga"}
-              </button>
+                <span className="history-item-title">{obj?.title || "Conversa antiga"}</span>
+                <button
+                  className="delete-btn"
+                  title="Excluir conversa"
+                  onClick={(e) => handleDeleteChat(e, obj?.chatId)}
+                >
+                  <Trash />
+                </button>
+              </div>
             ))}
           </div>
         </div>

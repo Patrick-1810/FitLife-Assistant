@@ -6,22 +6,9 @@ import io
 OCR_MODEL = "llava"
 
 NUTRITION_PROMPT = (
-    "Você é um nutricionista especialista. Analise esta imagem e responda SEMPRE em português, de forma direta e estruturada.\n\n"
-    "SE a imagem contiver uma TABELA NUTRICIONAL ou RÓTULO:\n"
-    "- Extraia todos os valores exatos: calorias, proteínas, carboidratos, gorduras, fibras, sódio e demais nutrientes.\n"
-    "- Informe a porção de referência.\n\n"
-    "SE a imagem mostrar um PRATO ou ALIMENTO sem rótulo:\n"
-    "- Identifique os alimentos presentes e estime as quantidades visíveis (em gramas).\n"
-    "- Estime os valores nutricionais aproximados: calorias totais, proteínas (g), carboidratos (g), gorduras (g).\n"
-    "- Deixe claro que são estimativas.\n\n"
-    "Formato da resposta:\n"
-    "**Alimentos identificados:** ...\n"
-    "**Estimativa de porção:** ...\n"
-    "**Calorias:** ...\n"
-    "**Proteínas:** ...\n"
-    "**Carboidratos:** ...\n"
-    "**Gorduras:** ...\n"
-    "**Observações:** ..."
+    "Look at this image and describe exactly what food items, dishes, and ingredients you can see. "
+    "Be specific: list every food item visible, describe the plate composition, and estimate the portion sizes if possible. "
+    "Only describe what you literally see in the image. Do not refuse."
 )
 
 GENERIC_PROMPT = (

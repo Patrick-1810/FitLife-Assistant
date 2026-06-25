@@ -53,9 +53,20 @@ export const fitLifeService = {
   carregarMensagensChat: async (chatId) => {
     try {
       const response = await api.get(`/chat/${chatId}`);
-      return response.data; // Retorna no padrão Redux: { _id: 123, items: [...] }
+      return response.data;
     } catch (error) {
       console.error(`Erro ao carregar mensagens do chat ${chatId}:`, error);
+      throw error;
+    }
+  },
+
+  // EXCLUI UM CHAT E SUAS MENSAGENS
+  excluirChat: async (chatId) => {
+    try {
+      const response = await api.delete(`/chat/${chatId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro ao excluir chat ${chatId}:`, error);
       throw error;
     }
   }

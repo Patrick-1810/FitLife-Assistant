@@ -185,9 +185,10 @@ header {
   .history-section {
     display: flex;
     flex-direction: column;
-    flex-grow: 1; // Ocupa todo o espaço vertical do meio
+    flex-grow: 1;
     padding: 0 1rem;
     overflow: hidden;
+    min-width: 0;
 
     .history-title {
       font-size: 0.75rem;
@@ -199,46 +200,80 @@ header {
 
     .history-list {
       overflow-y: auto;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       gap: 4px;
-      padding-right: 4px;
 
+      scrollbar-width: none;
       &::-webkit-scrollbar {
-        width: 5px;
-      }
-      &::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      &::-webkit-scrollbar-thumb {
-        background: rgba(138, 122, 107, 0.3);
-        border-radius: 10px;
+        display: none;
       }
 
       // Itens da Lista de Histórico
       .history-item {
-        background: transparent;
-        border: none;
+        display: flex;
+        align-items: center;
         width: 100%;
-        padding: 0.75rem 1rem;
-        text-align: left;
-        font-size: 0.95rem;
-        color: #4a3e3d;
+        padding: 0.6rem 0.75rem;
         border-radius: 0.75rem;
         cursor: pointer;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
         transition: background 0.2s;
+        gap: 6px;
 
         &:hover {
           background: rgba(212, 92, 54, 0.08);
+
+          .delete-btn {
+            opacity: 1;
+          }
         }
 
-        // Conversa Ativa selecionada
         &.active {
-          background: #f4e3cf; // Fundo escurecido suave do item ativo
-          font-weight: 500;
+          background: #f0d9c0;
+          font-weight: 600;
+          border-left: 3px solid #d65a31;
+          padding-left: calc(0.75rem - 3px);
+
+          .history-item-title {
+            color: #d65a31;
+          }
+        }
+
+        .history-item-title {
+          flex: 1;
+          font-size: 0.9rem;
+          color: #4a3e3d;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
+        .delete-btn {
+          flex-shrink: 0;
+          opacity: 0;
+          background: transparent;
+          border: none;
+          padding: 4px;
+          margin-right: 8px;
+          border-radius: 6px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: opacity 0.15s, background 0.15s;
+
+          svg {
+            width: 14px;
+            height: 14px;
+            color: #a0856f;
+          }
+
+          &:hover {
+            opacity: 1;
+            background: rgba(239, 68, 68, 0.12);
+            svg { color: #ef4444; }
+          }
         }
       }
     }

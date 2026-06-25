@@ -246,6 +246,56 @@
           animation: txtBlink 1s ease-in-out infinite;
         }
       }
+      .markdown-body {
+        color: #4a3e3d;
+        font-size: 1rem;
+        line-height: 1.6;
+
+        > *:first-child { margin-top: 0; }
+        > *:last-child { margin-bottom: 0; }
+
+        p { margin: 0 0 0.5rem 0; }
+
+        strong { font-weight: 600; }
+        em { font-style: italic; }
+
+        ul, ol {
+          padding-left: 1.5rem;
+          margin: 0.25rem 0 0.5rem;
+        }
+        li { margin-bottom: 0.25rem; line-height: 1.5; }
+
+        h1, h2, h3 {
+          font-weight: 600;
+          margin: 0.75rem 0 0.25rem;
+          color: #333;
+        }
+        h1 { font-size: 1.3rem; }
+        h2 { font-size: 1.15rem; }
+        h3 { font-size: 1.05rem; }
+
+        code {
+          background: rgba(0, 0, 0, 0.06);
+          padding: 0.1rem 0.3rem;
+          border-radius: 3px;
+          font-size: 0.875em;
+          font-family: monospace;
+        }
+        pre {
+          background: rgba(0, 0, 0, 0.04);
+          padding: 0.75rem;
+          border-radius: 6px;
+          overflow-x: auto;
+          margin: 0.5rem 0;
+          code { background: none; padding: 0; }
+        }
+        blockquote {
+          border-left: 3px solid #d65a31;
+          padding-left: 0.75rem;
+          margin: 0.5rem 0;
+          color: #7a685c;
+        }
+      }
     }
   }
 

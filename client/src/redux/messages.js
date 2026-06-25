@@ -30,9 +30,8 @@ let messagesSlice = createSlice({
             }
         },
         addList: (state, { payload }) => {
-            const { _id, items } = payload;
-            // Garante que o ID ativo no estado global seja guardado sempre como número inteiro
-            state._id = Number(_id);
+            const { chatId, items } = payload;
+            state._id = Number(chatId);
             
             // Mapeia o histórico do banco de dados unificando os IDs e injetando a imagem se houver
             state.all = items.map(item => ({

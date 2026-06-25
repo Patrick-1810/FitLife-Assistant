@@ -1,7 +1,6 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import { Reload, Rocket, Stop } from "../assets";
 import { Chat, New } from "../components";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { insertNew, livePrompt } from "../redux/messages";
 import { addHistory } from "../redux/history"; 
@@ -72,7 +71,7 @@ const Main = () => {
   return (
     <div className="main">
       <div className="contentArea">
-        {status.chat ? <Chat ref={chatRef} error={status.error} /> : <New />}
+        {status.chat ? <Chat ref={chatRef} error={status.error} resume={status.resume} /> : <New />}
       </div>
 
       <InputArea status={status} chatRef={chatRef} stateAction={stateAction} currentChatId={_id} />
@@ -135,32 +134,36 @@ const InputArea = ({ status, chatRef, stateAction, currentChatId }) => {
           chatsId: chatsIdProvisorio,
           content: "",
           prompt: mensagemUsuario,
-          image: localImageBlob, // Enviando o link temporário para o Redux Chat renderizar!
+          image: localImageBlob,
         }),
       );
 
       chatRef?.current?.clearResponse();
-      
-      // Limpa imediatamente o container de upload do input para dar o feedback visual de envio
-      clearSelectedImage(); 
+      clearSelectedImage();
+      dispatch(livePrompt(""));
+      if (textAreaRef.current) {
+        textAreaRef.current.style.height = "auto";
+      }
 
       try {
         let responseContent = "";
         let backendChatId = currentChatId;
 
         if (selectedImage) {
-          // Passa o arquivo "selectedImage" original que guardamos no escopo da função
           const ocrResult = await fitLifeService.enviarImagemOCR(selectedImage, true);
-          responseContent = ocrResult.text;
-          
-          if (prompt?.length > 0) {
-            const chatResult = await fitLifeService.enviarMensagemChat(
-              `Com base nesta análise: ${responseContent}. Responda: ${prompt}`,
-              backendEnvioId
-            );
-            responseContent = `[Resultado da Análise da Imagem]:\n${responseContent}\n\n[Sobre a sua pergunta]:\n` + chatResult.response;
-            backendChatId = chatResult.chat_id;
-          }
+          const ocrText = ocrResult.text;
+
+          const userMessage = prompt?.length > 0
+            ? `Com base nesta análise nutricional da imagem: ${ocrText}. Pergunta do usuário: ${prompt}`
+            : `Análise nutricional da imagem enviada: ${ocrText}`;
+
+          const chatResult = await fitLifeService.enviarMensagemChat(userMessage, backendEnvioId);
+
+          responseContent = prompt?.length > 0
+            ? `${ocrText}\n\n${chatResult.response}`
+            : ocrText;
+
+          backendChatId = chatResult.chat_id;
         } 
         else {
           const chatResult = await fitLifeService.enviarMensagemChat(mensagemUsuario, backendEnvioId);
@@ -263,7 +266,13 @@ const InputArea = ({ status, chatRef, stateAction, currentChatId }) => {
                 onChange={(e) => {
                   dispatch(livePrompt(e.target.value));
                 }}
-                style={{ flex: 1, paddingLeft: '4px' }} 
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    FormHandle();
+                  }
+                }}
+                style={{ flex: 1, paddingLeft: '4px' }}
               />
 
               {!status?.loading ? (
